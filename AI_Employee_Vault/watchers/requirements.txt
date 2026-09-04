@@ -1,0 +1,17 @@
+# AI Employee - Python Dependencies
+# Bronze Tier: File System Watcher
+
+# Core dependencies (required)
+# None - base watcher uses only standard library
+
+# Optional: Real-time file system monitoring (recommended for production)
+watchdog>=4.0.0
+
+# Future tiers
+google-api-python-client>=2.0.0  # Gmail watcher (Silver tier)
+google-auth-httplib2>=0.0.3     # Gmail authentication
+google-auth-oauthlib>=0.4.0     # Gmail OAuth
+playwright>=1.40.0              # WhatsApp watcher (Silver tier)
+requests>=2.31.0               # Odoo & Facebook (Gold tier)
+python-dotenv>=1.0.0            # Environment variables
+

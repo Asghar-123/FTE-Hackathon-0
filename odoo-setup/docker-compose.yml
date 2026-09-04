@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  odoo:
+    platform: linux/amd64
+    image: odoo:18.0
+    depends_on:
+      - db
+    ports:
+      - "8069:8069"
+      - "8072:8072"
+    volumes:
+      - odoo-data:/var/lib/odoo
+      - ./config:/etc/odoo
+      - ./addons:/mnt/extra-addons
+    environment:
+      - HOST=db
+      - USER=odoo
+      - PASSWORD=odoo
+      - ODOO_MASTER_PASSWORD=asghar123  # CHANGE THIS PASSWORD!
+    restart: always
+    networks:
+      - odoo-network
+
+  db:
+    platform: linux/amd64
+    image: postgres:16
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_PASSWORD=odoo
+      - POSTGRES_USER=odoo
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    restart: always
+    networks:
+      - odoo-network
+
+  odoo-mcp:
+    platform: linux/amd64
+    build:
+      context: ./mcp-odoo-adv # Build context is the cloned repository
+      dockerfile: Dockerfile.http # Use the HTTP Dockerfile
+    ports:
+      - "8008:8008" # Expose the HTTP port
+    depends_on:
+      - odoo # Ensure Odoo is up and running
+    env_file:
+      - ./.env # Load Odoo connection details from odoo-setup/.env
+    volumes:
+      - ./mcp-odoo-adv:/app # Mount the entire mcp-odoo-adv directory
+    networks:
+      - odoo-network # Use a common network for odoo and odoo-mcp
+    restart: on-failure
+
+volumes:
+  odoo-data:
+  db-data:
+
+networks:
+  odoo-network:
+    driver: bridge
